@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTube Link Input</title>
+</head>
+<body>
+  <h1>Enter a YouTube link</h1>
+
+  <input
+    id="ytUrl"
+    type="text"
+    placeholder="Paste YouTube link here"
+    style="width: 400px;"
+  />
+  <button onclick="submitLink()">Submit</button>
+
+  <pre id="message"></pre>
+
+  <script>
+    function extractYouTubeId(url) {
+      const match = url.match(/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]{11})/);
+      return match ? match[1] : null;
+    }
+
+    async function submitLink() {
+      const url = document.getElementById("ytUrl").value.trim();
+      const message = document.getElementById("message");
+
+      if (!url) {
+        message.textContent = "Please paste a YouTube link.";
+        return;
+      }
+
+      const videoId = extractYouTubeId(url);
+
+      if (!videoId) {
+        message.textContent = "That doesn’t look like a valid YouTube video URL.";
+        return;
+      }
+
+      message.textContent = "Sending videoId to backend...\n";
+
+      try {
+        const res = await fetch(`/comments?videoId=${encodeURIComponent(videoId)}`);
+        const data = await res.json();
+        message.textContent += "Backend responded:\n" + JSON.stringify(data, null, 2);
+      } catch (err) {
+        message.textContent += "Error calling backend: " + err;
+      }
+    }
+  </script>
+</body>
+</html>

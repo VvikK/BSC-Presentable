@@ -1,0 +1,2 @@
+# Ignore vcm (and git lab - only push to GitHub)
+vcm/
